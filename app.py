@@ -39,11 +39,7 @@ def foto_a_dibujo(archivo):
 
 def convertir_jpg(ruta):
     try:
-        #pillow_heif.register_heif_opener()
         print(ruta)
-        # imagen = Image.open(ruta)
-
-        ##########################
         heif_file = pillow_heif.read_heif(ruta)
         image = Image.frombytes(
             heif_file.mode,
@@ -82,19 +78,19 @@ def descarga_youtube(url, tipo):
     base, ext = os.path.splitext(datos_file)
     if tipo=='A':
         new_file=base+'.mp3'
+        new_name=yt.title+".mp3"
     else:
         new_file=base+'.mp4'
+        new_name=yt.title+'.mp4'
+    
     try:
         os.rename(datos_file, new_file)
     except:
         st.write('Archivo ya existe')
-
+    print(new_name)
     with open(new_file, "rb") as f:
         data1 = f.read()
-        if tipo=='A':
-            st.download_button("Descargar audio", data=data1, file_name=yt.title+'.mp3')
-        else:
-            st.download_button("Descargar video", data=data1, file_name=yt.title+'.mp4')
+    st.download_button("Descargar archivo", data=data1, file_name=new_name)
     rmtree("descargas")
     return None
 
