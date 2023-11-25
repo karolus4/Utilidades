@@ -10,4 +10,4 @@ Full error details have been recorded in the logs (if you're on Streamlit Cloud,
 
 No pude encontrar que ocasiona este error en Streamlit Cloud, lo raro era que si la ejecutabas desde el codespace del mismo streamlit no daba error.
 He cambiado la libreria pytube desde direcciones alternativas (ver archivo requirements.txt) y tampoco lo soluciono la primera vez. 
-Volvi a a crear el repositorio y lo sincronice, y luego lo envie a streamlit Cloud, y ahora si todo trabajo bien.
+Volvi a crear el repositorio, lo sincronice, y luego lo envie a streamlit Cloud; y ahora si todo trabaja bien.
