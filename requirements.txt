@@ -1,0 +1,9 @@
+imageio
+opencv-python-headless
+openpyxl
+Pillow
+pillow_heif
+pytube @ git+https://github.com/nficano/pytube@a32fff39058a6f7e5e59ecd06a7467b71197ce35
+rembg
+streamlit
+streamlit-option-menu
