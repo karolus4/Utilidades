@@ -8,4 +8,4 @@ un error si la ejecutas desde el navegador de una PC, mas no desde una tablet o 
 pytube.exceptions.VideoUnavailable: This app has encountered an error. The original error message is redacted to prevent data leaks.
 Full error details have been recorded in the logs (if you're on Streamlit Cloud, click on 'Manage app' in the lower right of your app). Traceback:
 
-El error lo corregi instalando pytube de @ git+https://github.com/nficano/pytube@a32fff39058a6f7e5e59ecd06a7467b71197ce35
+El error lo corregi indicandole a streamlit en los requirements.txt que la libreria pytube la obtenga de : @ git+https://github.com/nficano/pytube@a32fff39058a6f7e5e59ecd06a7467b71197ce35
