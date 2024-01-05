@@ -37,7 +37,7 @@ def foto_a_dibujo(archivo):
         st.write('No se pudo cargar la imagen.')
         return None
 
-def convertir_jpg(ruta):
+def convertir_heic_jpg(ruta):
     try:
         print(ruta)
         heif_file = pillow_heif.read_heif(ruta)
@@ -61,6 +61,25 @@ def convertir_jpg(ruta):
     except Exception as e:
         print("Error converting the image:", str(e))
         return None
+
+def convertir_webp_jpg(ruta):
+    try:
+        ruta_temporal=os.path.join(SUBCARPETA_TEMPORAL,nuevo_nombre)
+        jpeg_image = Image.open(ruta)
+        nueva_imagen = jpeg_image.save(ruta_temporal, format="JPEG")
+        st.image(ruta_temporal, caption='Imagen procesada', use_column_width=True)
+        st.write('Conversion realizada...')  
+        with open(ruta_temporal, 'rb') as f:
+            image_data=f.read()
+        st.download_button("Descargar imagen JPG", data=image_data, file_name=nuevo_nombre)
+        rmtree("temporales")
+        return None
+
+    except Exception as e:
+        print("Error converting the image:", str(e))
+        return None
+
+
 
 def descarga_youtube(url, tipo):
     yt = YouTube(url)
@@ -87,7 +106,7 @@ def descarga_youtube(url, tipo):
         os.rename(datos_file, new_file)
     except:
         st.write('Archivo ya existe')
-    print(new_name)
+
     with open(new_file, "rb") as f:
         data1 = f.read()
     st.download_button("Descargar archivo", data=data1, file_name=new_name)
@@ -104,7 +123,7 @@ st.write('###')
 # Menu
 selected = option_menu(
     menu_title=None,
-    options=["Home", "Quitar Fondo", "Foto a Dibujo", "HEIC a JPG", "Descargar Video Youtube"],
+    options=["Home", "Quitar Fondo", "Foto a Dibujo", "HEIC a JPG", "WEBP a JPG", "Descargar Video Youtube"],
     icons=["house", "bi-eye-slash", "camera", "caret-right-square-fill", "camera"],
     orientation="horizontal"
 )
@@ -221,11 +240,44 @@ if selected == "HEIC a JPG":
         
         with open(ruta_completa, "wb") as f:
             f.write(imagen_subida.read())    
-        #st.image(imagen_subida, caption='Imagen Subida', use_column_width=True)
         dibujo_button = st.button(label='Convertir a JPG')
 
         if dibujo_button:
-            convertir_jpg(ruta_completa)      
+            convertir_heic_jpg(ruta_completa)      
+
+if selected == "WEBP a JPG":
+    with st.container(): 
+        left_column, right_column= st.columns(2)
+        with left_column:
+            st.image('images/webptojpg.jpg')
+        with right_column:
+            st.header('Conversor de imagenes formato .webp a .jpg')
+            st.write(
+                """Proceso de conversion del formato de archivo webp usado en 
+                internet al formato universal jpg.
+                """                
+            )
+    imagen_subida = st.file_uploader('Subir imagen a procesar ...', type=['WEBP', 'webp'])
+
+    if imagen_subida is not None:
+        nombre_del_archivo=imagen_subida.name
+        nuevo_nombre=os.path.splitext(nombre_del_archivo)[0] + ".jpg"
+        # Carpeta temporal en el proyecto
+        SUBCARPETA_TEMPORAL = 'temporales'
+        if not os.path.exists(SUBCARPETA_TEMPORAL):
+            os.mkdir(SUBCARPETA_TEMPORAL)
+
+        ruta_completa = os.path.join(SUBCARPETA_TEMPORAL, nombre_del_archivo)
+        ruta_temporal = os.path.join(SUBCARPETA_TEMPORAL, nuevo_nombre)
+        
+        with open(ruta_completa, "wb") as f:
+            f.write(imagen_subida.read())    
+
+        dibujo_button = st.button(label='Convertir a JPG')
+
+        if dibujo_button:
+            convertir_webp_jpg(ruta_completa)  
+         
             
 if selected=="Descargar Video Youtube":
     with st.container(): 
