@@ -9,3 +9,4 @@ pytube.exceptions.VideoUnavailable: This app has encountered an error. The origi
 Full error details have been recorded in the logs (if you're on Streamlit Cloud, click on 'Manage app' in the lower right of your app). Traceback:
 
 El error lo corregi indicandole a streamlit en los requirements.txt que la libreria pytube la obtenga de : @ git+https://github.com/nficano/pytube@a32fff39058a6f7e5e59ecd06a7467b71197ce35
+ Esta publicado en la direccion https://droid-util.streamlit.app/
