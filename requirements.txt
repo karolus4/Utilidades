@@ -40,7 +40,6 @@ pydeck==0.8.1b0
 Pygments==2.17.2
 PyMatting==1.1.12
 python-dateutil==2.9.0.post0
-Python==3.10.12
 pytube==15.0.0
 pytz==2024.1
 referencing==0.33.0
