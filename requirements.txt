@@ -1,3 +1,4 @@
+pip-upgrade
 imageio
 opencv-python-headless
 openpyxl
@@ -6,4 +7,4 @@ pillow_heif
 streamlit
 streamlit-option-menu
 yt-dlp
-rembg
+rembg==2.0.61
