@@ -7,4 +7,3 @@ pillow_heif
 streamlit
 streamlit-option-menu
 yt-dlp
-rembg==2.0.61
