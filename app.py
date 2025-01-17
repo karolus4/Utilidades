@@ -10,17 +10,17 @@ import yt_dlp
 
 # Funciones ####################################################
 
-def quitar_background(image_upload):
-    # pasando imagen a bytes
-    image = Image.open(image_upload)
-    image.save(ruta_completa)
-    image_byte=io.BytesIO() # le indico que la varible se escribira en buffer de memoria
-    image.save(image_byte, format="PNG")
-    # Eliminando Fondo
-    image_byte.seek(0)
-    image_bytes_proccesed=remove(image_byte.read())
-    imagen_procesada=Image.open(io.BytesIO(image_bytes_proccesed))
-    return imagen_procesada
+# def quitar_background(image_upload):
+#     # pasando imagen a bytes
+#     image = Image.open(image_upload)
+#     image.save(ruta_completa)
+#     image_byte=io.BytesIO() # le indico que la varible se escribira en buffer de memoria
+#     image.save(image_byte, format="PNG")
+#     # Eliminando Fondo
+#     image_byte.seek(0)
+#     image_bytes_proccesed=remove(image_byte.read())
+#     imagen_procesada=Image.open(io.BytesIO(image_bytes_proccesed))
+#     return imagen_procesada
 
 def foto_a_dibujo(archivo):
     imagen = cv2.imread(archivo)
@@ -157,7 +157,7 @@ st.write('###')
 # Menu
 selected = option_menu(
     menu_title=None,
-    options=["Home", "Quitar Fondo", "Foto a Dibujo", "HEIC a JPG", "WEBP a JPG", "Descargar Video Youtube"],
+    options=["Home", "Foto a Dibujo", "HEIC a JPG", "WEBP a JPG", "Descargar Video Youtube"],
     icons=["house", "bi-eye-slash", "camera", "caret-right-square-fill", "camera"],
     orientation="horizontal"
 )
@@ -178,39 +178,39 @@ if selected == "Home":
                 """
             )
             
-if selected == "Quitar Fondo":
-    with st.container(): 
-        left_column, right_column= st.columns(2)
-        with left_column:
-            st.image('images/killbackground.png')
-        with right_column:
-            st.subheader('Quitar Fondo de Imagen')
-            st.write(
-                """Usamos la funcion remove de la libreria rembg
-                para la eliminacion automatica del fondo de la 
-                imagen
-                """
-            )
-    imagen_subida = st.file_uploader('Subir imagen a procesar ...', type=['jpg', 'jpeg', 'png'])
-    if imagen_subida is not None:
-        # Carpeta temporal en el proyecto
-        SUBCARPETA_TEMPORAL = 'temporales'
-        if not os.path.exists(SUBCARPETA_TEMPORAL):
-            os.mkdir(SUBCARPETA_TEMPORAL)
+# if selected == "Quitar Fondo":
+#     with st.container(): 
+#         left_column, right_column= st.columns(2)
+#         with left_column:
+#             st.image('images/killbackground.png')
+#         with right_column:
+#             st.subheader('Quitar Fondo de Imagen')
+#             st.write(
+#                 """Usamos la funcion remove de la libreria rembg
+#                 para la eliminacion automatica del fondo de la 
+#                 imagen
+#                 """
+#             )
+#     imagen_subida = st.file_uploader('Subir imagen a procesar ...', type=['jpg', 'jpeg', 'png'])
+#     if imagen_subida is not None:
+#         # Carpeta temporal en el proyecto
+#         SUBCARPETA_TEMPORAL = 'temporales'
+#         if not os.path.exists(SUBCARPETA_TEMPORAL):
+#             os.mkdir(SUBCARPETA_TEMPORAL)
         
-        st.image(imagen_subida, caption='Imagen Subida', use_column_width=True)
-        ruta_completa = os.path.join(SUBCARPETA_TEMPORAL, imagen_subida.name) # Capturando ruta completa
-        #****************************
-        remove_button = st.button(label='Quitar Fondo')
-        if remove_button:
-            imagen_procesada=quitar_background(imagen_subida)
-            st.image(imagen_procesada, caption='Fondo Removido', use_column_width=True)
-            ruta_completa = os.path.join(SUBCARPETA_TEMPORAL,"imagen_procesada.png") 
-            imagen_procesada.save(ruta_completa)
-            with open(ruta_completa, 'rb') as f:
-                image_data=f.read()
-            st.download_button("Descargar imagen procesada", data=image_data, file_name='imagen_procesada.png')
-            rmtree("temporales")
+#         st.image(imagen_subida, caption='Imagen Subida', use_column_width=True)
+#         ruta_completa = os.path.join(SUBCARPETA_TEMPORAL, imagen_subida.name) # Capturando ruta completa
+#         #****************************
+#         remove_button = st.button(label='Quitar Fondo')
+#         if remove_button:
+#             imagen_procesada=quitar_background(imagen_subida)
+#             st.image(imagen_procesada, caption='Fondo Removido', use_column_width=True)
+#             ruta_completa = os.path.join(SUBCARPETA_TEMPORAL,"imagen_procesada.png") 
+#             imagen_procesada.save(ruta_completa)
+#             with open(ruta_completa, 'rb') as f:
+#                 image_data=f.read()
+#             st.download_button("Descargar imagen procesada", data=image_data, file_name='imagen_procesada.png')
+#             rmtree("temporales")
         
 if selected == "Foto a Dibujo":
     with st.container(): 
