@@ -3,7 +3,7 @@ opencv-python-headless
 openpyxl
 pillow
 pillow_heif
-rembg                     2.0.61
 streamlit
 streamlit-option-menu
 yt-dlp
+rembg
