@@ -1,13 +1,15 @@
-import io
 import os
 import cv2
+import io
 from shutil import rmtree
 import streamlit as st 
 from streamlit_option_menu import option_menu
 from PIL import Image
 from rembg import remove
-from pytube import YouTube
-import pillow_heif
+#from pytube import YouTube
+#from pytubefix import YouTube
+#from pytubefix.cli import on_progress
+import yt_dlp
 
 # Funciones ####################################################
 
@@ -80,40 +82,77 @@ def convertir_webp_jpg(ruta):
         return None
 
 def descarga_youtube(url, tipo):
-    yt = YouTube(url)
-    # Muestra información sobre el video
-    st.write(f"**Título del video:** {yt.title}")
-    st.write(f"**Duración:** {yt.length} segundos")
 
-    # selecciona entre audio o video
-    if tipo=='A':
-        st.write('Extrayendo audio...')
-        datos = yt.streams.filter(only_audio=True).first()
-        extension = '.mp3'
-        formato = 'audio/mpeg'                
-    else:
-        st.write('Extrayendo video...')          
-        datos = yt.streams.filter(file_extension='mp4').get_highest_resolution()
-        extension = '.mp4'
-        formato = 'video/mp4'
-
-    datos_file=datos.download(output_path='descargas')
-    base, ext = os.path.splitext(datos_file)
-    new_file=base+extension
-    new_name=yt.title+extension    
+    save_path="descargas"
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
+    
+    try:
+        if tipo=='A':
+            opciones={
+                'format' : 'bestaudio/best',
+                'outtmpl' : save_path + '/%(title)s.%(ext)s',
+                'postprocessors': [  # Procesadores para convertir el audio
+                    {
+                        'key': 'FFmpegExtractAudio',  # Utiliza FFmpeg para extraer audio
+                        'preferredcodec': 'mp3',  # Convierte a formato MP3
+                        'preferredquality': '0',  # Calidad del MP3 (en kbps)
+                    }
+                ],
+                'quiet': False,  # Muestra el progreso
+            }
+            st.write('Extrayendo audio...')
+            extension = '.mp3'
+            formato = 'audio/mpeg'                   
+        else:
+            opciones={
+                #'format' : 'bestvideo + bestaudio/best', #FFmpeg
+                'format' : 'best', #FFmpeg
+                'merge_output_format': 'mp4',  # Combina el video y audio en un archivo MP4.
+                'outtmpl' : save_path + '/%(title)s.%(ext)s',
+                'preferredquality': '0',  # Calidad (en kbps)
+                'quiet': False,  # Muestra el progreso
+            }            
+            st.write('Extrayendo video...')          
+            extension = '.mp4'
+            formato = 'video/mp4'
+            
+        with yt_dlp.YoutubeDL(opciones) as ydl:
+            #ydl.download([url])
+            #print("Descarga completa")  
+            #info_dict = ydl.extract_info(url, download=False)
+            info_dict = ydl.extract_info(url, download=True)
+            
+            # Obtiene la ruta completa del archivo descargado
+            file_path = info_dict.get('requested_downloads', [{}])[0].get('filepath', None)
+            
+            if file_path:
+                print(f"**Archivo descargado en:** {file_path}")
+            else:
+                print("No se pudo determinar la ruta del archivo descargado.")
+            
+            video_title = info_dict.get('title', None)
+            video_length = info_dict.get('length', None)
+            print(video_title)    
+            
+    except Exception as e:
+        print(f"Ocurrio un error : {e}")
+    
+    # Muestra información sobre el video       
+    st.write(f"**Título del video:** {video_title}")
+    st.write(f"**Duración:** {video_length} segundos")   
 
     st.write('Proceso completado')        
-    os.rename(datos_file, new_file)
-    with open(new_file, "rb") as f:
-        data1 = f.read()
-    st.download_button("Descargar archivo", data=data1, file_name=new_name, mime=formato)
+    with open(file_path, "rb") as f:
+       data1 = f.read()
+    st.download_button("Descargar archivo", data=data1, file_name=video_title, mime=formato)
 
-    rmtree("descargas")
+    #rmtree("descargas")
     return None
 
 ####################################################################
+
 # Frontend
-####################################################################
 st.set_page_config(page_title='DROID - Utilidades', layout='centered')
 st.title('UTILIDADES DROID')
 st.write('###')
