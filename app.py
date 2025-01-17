@@ -6,9 +6,6 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 from PIL import Image
 from rembg import remove
-#from pytube import YouTube
-#from pytubefix import YouTube
-#from pytubefix.cli import on_progress
 import yt_dlp
 
 # Funciones ####################################################
@@ -147,7 +144,7 @@ def descarga_youtube(url, tipo):
        data1 = f.read()
     st.download_button("Descargar archivo", data=data1, file_name=video_title, mime=formato)
 
-    #rmtree("descargas")
+    rmtree("descargas")
     return None
 
 ####################################################################

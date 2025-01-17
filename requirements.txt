@@ -1,9 +1,9 @@
-imageio
-opencv-python-headless
-openpyxl
-Pillow
-pillow_heif
-rembg
-streamlit
-streamlit-option-menu
-yt-dlp
+imageio                   2.34.0
+opencv-python-headless    4.9.0.80
+openpyxl                  3.1.2
+pillow                    10.2.0
+pillow_heif               0.15.0
+rembg                     2.0.61
+streamlit                 1.32.0
+streamlit-option-menu     0.3.12
+yt-dlp                    2025.1.15
