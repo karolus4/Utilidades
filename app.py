@@ -6,8 +6,31 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 from PIL import Image
 import yt_dlp
+import speech_recognition as sr
+from pydub import AudioSegment
 
 # Funciones ####################################################
+
+def convert_mp3_to_wav(mp3_file, wav_file):
+    audio = AudioSegment.from_mp3(mp3_file)
+    audio.export(wav_file, format="wav")
+
+# Transcribir el audio a texto
+def transcribe_audio(ruta_wav_file):
+    st.write("Espere... estamos procesando el archivo y extrayendo el texto")
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(ruta_wav_file) as source:
+        audio = recognizer.record(source)
+    try:
+        texto = recognizer.recognize_google(audio, language="es-ES")  # Cambia el idioma si es necesario
+        st.write(f"Texto encontrado : {texto}")
+        st.download_button("Descargar archivo *.txt", data=texto, file_name=nuevo_nombre)
+        rmtree("temporales")
+        return None  
+    except sr.UnknownValueError:
+        return "No se pudo entender el audio"
+    except sr.RequestError:
+        return "Error en la solicitud al servicio de reconocimiento"
 
 # def quitar_background(image_upload):
 #     # pasando imagen a bytes
@@ -156,8 +179,8 @@ st.write('###')
 # Menu
 selected = option_menu(
     menu_title=None,
-    options=["Home", "Foto a Dibujo", "HEIC a JPG", "WEBP a JPG", "Descargar Video Youtube"],
-    icons=["house", "bi-eye-slash", "camera", "caret-right-square-fill", "camera"],
+    options=["Home", "Foto a Dibujo", "HEIC a JPG", "WEBP a JPG", "Descargar Video Youtube", "Transcribir Audio Mp3"],
+    icons=["house", "camera", "apple","cloud-upload","caret-right-square-fill", "list-task"],
     orientation="horizontal"
 )
 
@@ -338,3 +361,42 @@ if selected=="Descargar Video Youtube":
                     file_path = descarga_youtube(url_path, 'A')                   
                 elif type == 'Video 720p':
                     file_path = descarga_youtube(url_path, 'V') 
+
+if selected=="Transcribir Audio Mp3":
+    with st.container(): 
+        left_column, right_column= st.columns((1,2))
+        with left_column:
+            st.image('images/mp3totxt.jpg')
+        with right_column:
+            st.header('Transcribir Audio Mp3')
+            st.write(
+                """A traves de esta aplicacion podemos convertir
+                audio mp3 en texto editable.
+                Debes seleccionar el archivo de audio mp3, dar click en 
+                Transcribir y luego descargaras un txt con el texto. 
+                """                
+            )
+
+    audio_subido = st.file_uploader('Subir audio mp3 a procesar ...', type=['mp3', 'MP3'])
+
+    if audio_subido is not None:
+        nombre_del_archivo=audio_subido.name
+        nuevo_nombre=os.path.splitext(nombre_del_archivo)[0] + ".txt"
+
+        # Carpeta temporal en el proyecto
+        SUBCARPETA_TEMPORAL = 'temporales'
+        if not os.path.exists(SUBCARPETA_TEMPORAL):
+            os.mkdir(SUBCARPETA_TEMPORAL)
+
+        ruta_completa = os.path.join(SUBCARPETA_TEMPORAL, nombre_del_archivo)
+        ruta_wav_file = os.path.join(SUBCARPETA_TEMPORAL, "temp_audio.wav")
+        
+        with open(ruta_completa, "wb") as f:
+            f.write(audio_subido.read())
+            f.close()
+        
+        dibujo_button = st.button(label='Transcribir')
+
+        if dibujo_button:
+            convert_mp3_to_wav(ruta_completa, ruta_wav_file)  
+            transcription = transcribe_audio(ruta_wav_file)
