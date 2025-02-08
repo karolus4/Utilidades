@@ -7,3 +7,6 @@ pillow_heif
 streamlit
 streamlit-option-menu
 yt-dlp
+pydub
+SpeechRecognition
+typing_extensions
