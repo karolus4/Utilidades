@@ -1,9 +1,9 @@
-pip-upgrade
 imageio
 opencv-python-headless
 openpyxl
-pillow
+Pillow
 pillow_heif
+rembg==2.0.38
 streamlit
 streamlit-option-menu
 yt-dlp

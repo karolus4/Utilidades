@@ -5,44 +5,25 @@ from shutil import rmtree
 import streamlit as st 
 from streamlit_option_menu import option_menu
 from PIL import Image
+from rembg import remove
 import yt_dlp
 import speech_recognition as sr
 from pydub import AudioSegment
 
+
 # Funciones ####################################################
 
-def convert_mp3_to_wav(mp3_file, wav_file):
-    audio = AudioSegment.from_mp3(mp3_file)
-    audio.export(wav_file, format="wav")
-
-# Transcribir el audio a texto
-def transcribe_audio(ruta_wav_file):
-    st.write("Espere... estamos procesando el archivo y extrayendo el texto")
-    recognizer = sr.Recognizer()
-    with sr.AudioFile(ruta_wav_file) as source:
-        audio = recognizer.record(source)
-    try:
-        texto = recognizer.recognize_google(audio, language="es-ES")  # Cambia el idioma si es necesario
-        st.write(f"Texto encontrado : {texto}")
-        st.download_button("Descargar archivo *.txt", data=texto, file_name=nuevo_nombre)
-        rmtree("temporales")
-        return None  
-    except sr.UnknownValueError:
-        return "No se pudo entender el audio"
-    except sr.RequestError:
-        return "Error en la solicitud al servicio de reconocimiento"
-
-# def quitar_background(image_upload):
-#     # pasando imagen a bytes
-#     image = Image.open(image_upload)
-#     image.save(ruta_completa)
-#     image_byte=io.BytesIO() # le indico que la varible se escribira en buffer de memoria
-#     image.save(image_byte, format="PNG")
-#     # Eliminando Fondo
-#     image_byte.seek(0)
-#     image_bytes_proccesed=remove(image_byte.read())
-#     imagen_procesada=Image.open(io.BytesIO(image_bytes_proccesed))
-#     return imagen_procesada
+def quitar_background(image_upload):
+    # pasando imagen a bytes
+    image = Image.open(image_upload)
+    image.save(ruta_completa)
+    image_byte=io.BytesIO() # le indico que la varible se escribira en buffer de memoria
+    image.save(image_byte, format="PNG")
+    # Eliminando Fondo
+    image_byte.seek(0)
+    image_bytes_proccesed=remove(image_byte.read())
+    imagen_procesada=Image.open(io.BytesIO(image_bytes_proccesed))
+    return imagen_procesada
 
 def foto_a_dibujo(archivo):
     imagen = cv2.imread(archivo)
@@ -71,7 +52,7 @@ def convertir_heic_jpg(ruta):
         ruta_temporal=os.path.join(SUBCARPETA_TEMPORAL,nuevo_nombre)
         jpeg_image = image.convert('RGB')
         nueva_imagen = jpeg_image.save(ruta_temporal, format="JPEG")
-        st.image(ruta_temporal, caption='Imagen procesada', use_column_width=True)
+        st.image(ruta_temporal, caption='Imagen procesada', use_container_width=True)
         st.write('Conversion realizada...')  
         with open(ruta_temporal, 'rb') as f:
             image_data=f.read()
@@ -88,7 +69,7 @@ def convertir_webp_jpg(ruta):
         ruta_temporal=os.path.join(SUBCARPETA_TEMPORAL,nuevo_nombre)
         jpeg_image = Image.open(ruta)
         nueva_imagen = jpeg_image.save(ruta_temporal, format="JPEG")
-        st.image(ruta_temporal, caption='Imagen procesada', use_column_width=True)
+        st.image(ruta_temporal, caption='Imagen procesada', use_container_width=True)
         st.write('Conversion realizada...')  
         with open(ruta_temporal, 'rb') as f:
             image_data=f.read()
@@ -169,6 +150,27 @@ def descarga_youtube(url, tipo):
     rmtree("descargas")
     return None
 
+def convert_mp3_to_wav(mp3_file, wav_file):
+    audio = AudioSegment.from_mp3(mp3_file)
+    audio.export(wav_file, format="wav")
+
+# Transcribir el audio a texto
+def transcribe_audio(ruta_wav_file):
+    st.write("Espere... estamos procesando el archivo y extrayendo el texto")
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(ruta_wav_file) as source:
+        audio = recognizer.record(source)
+    try:
+        texto = recognizer.recognize_google(audio, language="es-ES")  # Cambia el idioma si es necesario
+        st.write(f"Texto encontrado : {texto}")
+        st.download_button("Descargar archivo *.txt", data=texto, file_name=nuevo_nombre)
+        rmtree("temporales")
+        return None  
+    except sr.UnknownValueError:
+        return "No se pudo entender el audio"
+    except sr.RequestError:
+        return "Error en la solicitud al servicio de reconocimiento"
+
 ####################################################################
 
 # Frontend
@@ -179,8 +181,8 @@ st.write('###')
 # Menu
 selected = option_menu(
     menu_title=None,
-    options=["Home", "Foto a Dibujo", "HEIC a JPG", "WEBP a JPG", "Descargar Video Youtube", "Transcribir Audio Mp3"],
-    icons=["house", "camera", "apple","cloud-upload","caret-right-square-fill", "list-task"],
+    options=["Home", "Quitar Fondo", "Foto a Dibujo", "HEIC a JPG", "WEBP a JPG", "Descargar Video Youtube", "Transcribir Audio Mp3"],
+    icons=["house", "bi-eye-slash", "camera", "apple","cloud-upload","caret-right-square-fill", "list-task"],
     orientation="horizontal"
 )
 
@@ -200,39 +202,39 @@ if selected == "Home":
                 """
             )
             
-# if selected == "Quitar Fondo":
-#     with st.container(): 
-#         left_column, right_column= st.columns(2)
-#         with left_column:
-#             st.image('images/killbackground.png')
-#         with right_column:
-#             st.subheader('Quitar Fondo de Imagen')
-#             st.write(
-#                 """Usamos la funcion remove de la libreria rembg
-#                 para la eliminacion automatica del fondo de la 
-#                 imagen
-#                 """
-#             )
-#     imagen_subida = st.file_uploader('Subir imagen a procesar ...', type=['jpg', 'jpeg', 'png'])
-#     if imagen_subida is not None:
-#         # Carpeta temporal en el proyecto
-#         SUBCARPETA_TEMPORAL = 'temporales'
-#         if not os.path.exists(SUBCARPETA_TEMPORAL):
-#             os.mkdir(SUBCARPETA_TEMPORAL)
+if selected == "Quitar Fondo":
+    with st.container(): 
+        left_column, right_column= st.columns(2)
+        with left_column:
+            st.image('images/killbackground.png')
+        with right_column:
+            st.subheader('Quitar Fondo de Imagen')
+            st.write(
+                """Usamos la funcion remove de la libreria rembg
+                para la eliminacion automatica del fondo de la 
+                imagen
+                """
+            )
+    imagen_subida = st.file_uploader('Subir imagen a procesar ...', type=['jpg', 'jpeg', 'png'])
+    if imagen_subida is not None:
+        # Carpeta temporal en el proyecto
+        SUBCARPETA_TEMPORAL = 'temporales'
+        if not os.path.exists(SUBCARPETA_TEMPORAL):
+            os.mkdir(SUBCARPETA_TEMPORAL)
         
-#         st.image(imagen_subida, caption='Imagen Subida', use_column_width=True)
-#         ruta_completa = os.path.join(SUBCARPETA_TEMPORAL, imagen_subida.name) # Capturando ruta completa
-#         #****************************
-#         remove_button = st.button(label='Quitar Fondo')
-#         if remove_button:
-#             imagen_procesada=quitar_background(imagen_subida)
-#             st.image(imagen_procesada, caption='Fondo Removido', use_column_width=True)
-#             ruta_completa = os.path.join(SUBCARPETA_TEMPORAL,"imagen_procesada.png") 
-#             imagen_procesada.save(ruta_completa)
-#             with open(ruta_completa, 'rb') as f:
-#                 image_data=f.read()
-#             st.download_button("Descargar imagen procesada", data=image_data, file_name='imagen_procesada.png')
-#             rmtree("temporales")
+        st.image(imagen_subida, caption='Imagen Subida', use_container_width=True)
+        ruta_completa = os.path.join(SUBCARPETA_TEMPORAL, imagen_subida.name) # Capturando ruta completa
+        #****************************
+        remove_button = st.button(label='Quitar Fondo')
+        if remove_button:
+            imagen_procesada=quitar_background(imagen_subida)
+            st.image(imagen_procesada, caption='Fondo Removido', use_container_width=True)
+            ruta_completa = os.path.join(SUBCARPETA_TEMPORAL,"imagen_procesada.png") 
+            imagen_procesada.save(ruta_completa)
+            with open(ruta_completa, 'rb') as f:
+                image_data=f.read()
+            st.download_button("Descargar imagen procesada", data=image_data, file_name='imagen_procesada.png')
+            rmtree("temporales")
         
 if selected == "Foto a Dibujo":
     with st.container(): 
@@ -258,11 +260,11 @@ if selected == "Foto a Dibujo":
         with open(ruta_completa, "wb") as f:
             f.write(imagen_subida.read())    
 
-        st.image(imagen_subida, caption='Imagen Subida', use_column_width=True)
+        st.image(imagen_subida, caption='Imagen Subida', use_container_width=True)
         dibujo_button = st.button(label='Convertir a Dibujo')
         if dibujo_button:
             imagen_procesada=foto_a_dibujo(ruta_completa)
-            st.image(imagen_procesada, caption='Foto a Dibujo', use_column_width=True)
+            st.image(imagen_procesada, caption='Foto a Dibujo', use_container_width=True)
             ruta_completa = os.path.join(SUBCARPETA_TEMPORAL,"foto_a_dibujo.png") 
             cv2.imwrite(ruta_completa, imagen_procesada)
             with open(ruta_completa, 'rb') as f:
@@ -333,8 +335,7 @@ if selected == "WEBP a JPG":
 
         if dibujo_button:
             convertir_webp_jpg(ruta_completa)  
-         
-            
+
 if selected=="Descargar Video Youtube":
     with st.container(): 
         left_column, right_column= st.columns((1,2))
@@ -360,8 +361,8 @@ if selected=="Descargar Video Youtube":
                 if type == 'Audio':
                     file_path = descarga_youtube(url_path, 'A')                   
                 elif type == 'Video 720p':
-                    file_path = descarga_youtube(url_path, 'V') 
-
+                    file_path = descarga_youtube(url_path, 'V')          
+            
 if selected=="Transcribir Audio Mp3":
     with st.container(): 
         left_column, right_column= st.columns((1,2))
