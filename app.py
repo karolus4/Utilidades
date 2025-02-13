@@ -10,7 +10,6 @@ import yt_dlp
 import speech_recognition as sr
 from pydub import AudioSegment
 
-
 # Funciones ####################################################
 
 def quitar_background(image_upload):
@@ -118,9 +117,7 @@ def descarga_youtube(url, tipo):
             formato = 'video/mp4'
             
         with yt_dlp.YoutubeDL(opciones) as ydl:
-            #ydl.download([url])
-            #print("Descarga completa")  
-            #info_dict = ydl.extract_info(url, download=False)
+
             info_dict = ydl.extract_info(url, download=True)
             
             # Obtiene la ruta completa del archivo descargado
